@@ -133,7 +133,16 @@ public class Target extends AbstractEntity<Target> implements WithFarmID<Target>
 
     @Override
     public EntityStatus getStatus() {
-        return getHealthy() == Backend.Health.UNKNOWN ? EntityStatus.PENDING : super.getStatusFromMap();
+        if (getHealthy() == Backend.Health.HEALTHY && super.getStatusFromMap() == EntityStatus.OK) {
+            return EntityStatus.OK;
+        }
+        if (getHealthy() == Backend.Health.UNKNOWN || super.getStatusFromMap() == EntityStatus.PENDING) {
+            return EntityStatus.PENDING;
+        }
+        if (getHealthy() == Backend.Health.DEAD || super.getStatusFromMap() == EntityStatus.ERROR) {
+            return EntityStatus.ERROR;
+        }
+        return EntityStatus.PENDING;
     }
 
     public Backend.Health getHealthy() {
